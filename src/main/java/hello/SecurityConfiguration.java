@@ -17,8 +17,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         System.err.println("Using custom security configuration");
-        http
-                .authorizeRequests()
-                .and().csrf().disable();
+        super.configure(http);
     }
 }

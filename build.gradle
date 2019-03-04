@@ -17,6 +17,8 @@ sourceCompatibility = 1.10
 targetCompatibility = 1.10
 
 dependencies {
+    
+    implementation 'org.hibernate:hibernate-core:5.4.1.Final'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.security:spring-security-web'

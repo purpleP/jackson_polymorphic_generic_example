@@ -40,7 +40,7 @@ public class MySecurityRoot extends SecurityExpressionRoot implements MethodSecu
     }
 
     public boolean allowed() {
-        return false;
+        return true;
     }
 
 }
