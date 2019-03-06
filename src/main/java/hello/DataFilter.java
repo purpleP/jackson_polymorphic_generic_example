@@ -4,12 +4,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import java.time.LocalDate;
+import java.time.ZonedDateTime;
+
 import static com.fasterxml.jackson.annotation.JsonTypeInfo.As.PROPERTY;
 import static com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME;
-
-import java.util.Date;
-
-import javax.persistence.criteria.Root;
 
 @JsonTypeInfo(use = NAME, include = PROPERTY, property = "TYPE")
 @JsonSubTypes({
@@ -23,7 +26,7 @@ import javax.persistence.criteria.Root;
     @JsonSubTypes.Type(value=LikeFilter.class, name = "LIKE"),
     @JsonSubTypes.Type(value=ContainsFilter.class, name = "CONTAINS")
 })
-abstract class DataFilter<T> {
+public abstract class DataFilter<T> {
     @JsonProperty
     boolean negated;
     @JsonProperty
@@ -43,13 +46,26 @@ abstract class DataFilter<T> {
         this.value = value;
     }
 
-
-    public <R> void toPredicate(Root<R> root) {
-        if (root.get("property").getJavaType() == Date.class) {
-            DateTimeFormat.ISO_OFFSET_DATE
+    public <R> Predicate toPredicate(Root<R> root, CriteriaBuilder cb) {
+        Path<?> path = root.get(property);
+        Class<?> cls = path.getJavaType();
+        Object obj;
+        if (cls.isAssignableFrom(LocalDate.class)) {
+            obj = LocalDate.parse((String) value);
+        } else if (cls.isAssignableFrom(ZonedDateTime.class)) {
+            obj = ZonedDateTime.parse((String) value);
+        } else {
+            obj = value;
         }
-        return null;
+        return make(cb, path, cls, cls.cast(obj));
     }
+
+    protected abstract Predicate make(
+        CriteriaBuilder cb,
+        Path<?> path,
+        Class<?> cls,
+        Object obj
+    );
 
     @Override
     public String toString() {

@@ -1,5 +1,8 @@
 package hello;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
 import java.util.List;
 
 class InFilter<T> extends DataFilter<List<T>> {
@@ -12,4 +15,11 @@ class InFilter<T> extends DataFilter<List<T>> {
     InFilter(String property, List<T> value, boolean negated) {
         super(property, value, negated);
     }
+
+    @Override protected Predicate make(
+        CriteriaBuilder cb, Path<?> path, Class<?> cls, Object obj
+    ) {
+        return null;
+    }
+
 }
