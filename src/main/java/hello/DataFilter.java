@@ -73,7 +73,7 @@ public abstract class DataFilter<T, U, G> {
 
     public <R> Predicate toPredicate(Root<R> root, CriteriaBuilder cb) {
         Path<U> path = root.get(property);
-        Predicate p = pred(cb).apply(path, transform(value, path.getJavaType()));
+        Predicate p = pred(cb).apply(path, transform(path.getJavaType()));
         return negated ? p.not() : p;
     }
 
@@ -83,7 +83,7 @@ public abstract class DataFilter<T, U, G> {
     }
 
     @SuppressWarnings("unchecked")
-    G transform(T value, Class<? extends U> cls) {
+    G transform(Class<? extends U> cls) {
         return (G) trans(value, cls);
     }
 

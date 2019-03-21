@@ -23,7 +23,8 @@ class InFilter<T, U> extends DataFilter<List<T>, U, List<U>> {
     }
 
     @Override
-    protected List<U> transform(List<T> value, Class<? extends U> cls) {
+    @SuppressWarnings("unchecked")
+    protected List<U> transform(Class<? extends U> cls) {
         return value.stream().map(v -> (U) trans(v, cls)).collect(Collectors.toList());
     }
 
