@@ -3,14 +3,18 @@ package hello;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import java.util.function.BiFunction;
 
-class IsNullFilter<T> extends DataFilter<Void> {
+class IsNullFilter<U> extends DataFilter<Void, U, Void> {
+    @Override BiFunction<Path<U>, Void, Predicate> pred(CriteriaBuilder cb) {
+        return null;
+    }
+
     IsNullFilter(){}
 
-    @Override protected Predicate make(
-        CriteriaBuilder cb, Path<?> path, Class<?> cls, Object obj
-    ) {
-        return null;
+    @Override public <R> Predicate toPredicate(Root<R> root, CriteriaBuilder cb) {
+        return root.get(property).isNull();
     }
 
     IsNullFilter(String property) {

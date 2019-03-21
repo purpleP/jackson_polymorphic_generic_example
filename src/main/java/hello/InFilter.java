@@ -4,8 +4,14 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import java.util.List;
+import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 
-class InFilter<T> extends DataFilter<List<T>> {
+class InFilter<T, U> extends DataFilter<List<T>, U, List<U>> {
+    @Override BiFunction<Path<U>, List<U>, Predicate> pred(CriteriaBuilder cb) {
+        return (p, l) -> l.isEmpty() ? cb.or() : p.in(l);
+    }
+
     InFilter(){}
     
     InFilter(String property, List<T> value) {
@@ -16,10 +22,9 @@ class InFilter<T> extends DataFilter<List<T>> {
         super(property, value, negated);
     }
 
-    @Override protected Predicate make(
-        CriteriaBuilder cb, Path<?> path, Class<?> cls, Object obj
-    ) {
-        return null;
+    @Override
+    protected List<U> transform(List<T> value, Class<? extends U> cls) {
+        return value.stream().map(v -> (U) trans(v, cls)).collect(Collectors.toList());
     }
 
 }

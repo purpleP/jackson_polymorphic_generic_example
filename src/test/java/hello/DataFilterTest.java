@@ -11,6 +11,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.util.List;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -19,8 +20,32 @@ class DataFilterTest {
     @Autowired EntityManager entityManager;
 
     @Test
-    void testGeFilter() {
+    void testEqFilterDate() {
         var f = new GeFilter<>("date", "2010-01-01");
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<A> q = cb.createQuery(A.class);
+        Root<A> root = q.from(A.class);
+        Predicate p = f.toPredicate(root, cb);
+        q.select(root);
+        q.where(p);
+        entityManager.createQuery(q).getResultList();
+    }
+
+    @Test
+    void testIsNull() {
+        var f = new IsNullFilter<>("id");
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<A> q = cb.createQuery(A.class);
+        Root<A> root = q.from(A.class);
+        Predicate p = f.toPredicate(root, cb);
+        q.select(root);
+        q.where(p);
+        entityManager.createQuery(q).getResultList();
+    }
+
+    @Test
+    void testInFilter() {
+        var f = new InFilter<>("id", List.of());
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<A> q = cb.createQuery(A.class);
         Root<A> root = q.from(A.class);

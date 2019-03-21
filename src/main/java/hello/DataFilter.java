@@ -10,9 +10,14 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import static com.fasterxml.jackson.annotation.JsonTypeInfo.As.PROPERTY;
 import static com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME;
+import static java.util.Map.entry;
 
 @JsonTypeInfo(use = NAME, include = PROPERTY, property = "TYPE")
 @JsonSubTypes({
@@ -26,7 +31,19 @@ import static com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME;
     @JsonSubTypes.Type(value=LikeFilter.class, name = "LIKE"),
     @JsonSubTypes.Type(value=ContainsFilter.class, name = "CONTAINS")
 })
-public abstract class DataFilter<T> {
+public abstract class DataFilter<T, U, G> {
+
+    abstract BiFunction<Path<U>, G, Predicate> pred(CriteriaBuilder cb);
+
+    private static Map<
+        Map.Entry<Class<?>, Class<?>>, Function<Object, Object>
+    > converters = Map.ofEntries(
+        mk(Integer.class, Long.class, Integer::longValue),
+        mk(Integer.class, long.class, Integer::longValue),
+        mk(String.class, LocalDate.class, LocalDate::parse),
+        mk(String.class, ZonedDateTime.class, ZonedDateTime::parse)
+    );
+
     @JsonProperty
     boolean negated;
     @JsonProperty
@@ -34,7 +51,14 @@ public abstract class DataFilter<T> {
     @JsonProperty
     T value;
 
+
     DataFilter() {}
+
+    private static <X, Y>
+        Map.Entry<Map.Entry<Class<?>, Class<?>>, Function<Object, Object>>
+        mk(Class<X> from, Class<Y> to, Function<? super X, ? extends Y> f) {
+            return entry(entry(from, to), x -> f.apply(from.cast(x)));
+    }
 
     public DataFilter(String property, T value) {
         this(property, value, false);
@@ -46,26 +70,23 @@ public abstract class DataFilter<T> {
         this.value = value;
     }
 
+
     public <R> Predicate toPredicate(Root<R> root, CriteriaBuilder cb) {
-        Path<?> path = root.get(property);
-        Class<?> cls = path.getJavaType();
-        Object obj;
-        if (cls.isAssignableFrom(LocalDate.class)) {
-            obj = LocalDate.parse((String) value);
-        } else if (cls.isAssignableFrom(ZonedDateTime.class)) {
-            obj = ZonedDateTime.parse((String) value);
-        } else {
-            obj = value;
-        }
-        return make(cb, path, cls, cls.cast(obj));
+        Path<U> path = root.get(property);
+        Predicate p = pred(cb).apply(path, transform(value, path.getJavaType()));
+        return negated ? p.not() : p;
     }
 
-    protected abstract Predicate make(
-        CriteriaBuilder cb,
-        Path<?> path,
-        Class<?> cls,
-        Object obj
-    );
+    <X, Y> Object trans(X value, Class<? extends Y> cls) {
+        return Optional.ofNullable(DataFilter.converters.get(Map.entry(value.getClass(), cls)))
+                .map(f -> f.apply(value)).orElse(value);
+    }
+
+    @SuppressWarnings("unchecked")
+    G transform(T value, Class<? extends U> cls) {
+        return (G) trans(value, cls);
+    }
+
 
     @Override
     public String toString() {
