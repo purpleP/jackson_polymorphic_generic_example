@@ -71,7 +71,7 @@ public abstract class DataFilter<T, U, G> {
     }
 
 
-    public <R> Predicate toPredicate(Root<R> root, CriteriaBuilder cb) {
+    public Predicate toPredicate(Root<?> root, CriteriaBuilder cb) {
         Path<U> path = root.get(property);
         Predicate p = pred(cb).apply(path, transform(path.getJavaType()));
         return negated ? p.not() : p;
