@@ -13,7 +13,7 @@ class IsNullFilter<U> extends DataFilter<Void, U, Void> {
 
     IsNullFilter(){}
 
-    @Override public <R> Predicate toPredicate(Root<R> root, CriteriaBuilder cb) {
+    @Override public Predicate toPredicate(Root<?> root, CriteriaBuilder cb) {
         return root.get(property).isNull();
     }
 
