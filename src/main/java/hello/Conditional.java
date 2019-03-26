@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.Map;
@@ -49,10 +48,9 @@ public abstract class Conditional<T, U, G> extends AbstractConditional {
     }
 
 
-    public Predicate toPredicate(Root<?> root, CriteriaBuilder cb) {
-        Path<U> path = root.get(property);
-        Predicate p = pred(cb).apply(path, transform(path.getJavaType()));
-        return negated ? p.not() : p;
+    public Predicate makePredicate(Path<?> path, CriteriaBuilder cb) {
+        Path<U> p = (Path<U>) path;
+        return pred(cb).apply(p, transform(p.getJavaType()));
     }
 
     <X, Y> Object trans(X value, Class<? extends Y> cls) {
