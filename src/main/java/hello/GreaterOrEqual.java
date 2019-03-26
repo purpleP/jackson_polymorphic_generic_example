@@ -5,18 +5,19 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import java.util.function.BiFunction;
 
-class EqFilter<T, U> extends DataFilter<T, U, U> {
+public class GreaterOrEqual<T, U extends Comparable<U>> extends Conditional<T, U, U> {
     @Override BiFunction<Path<U>, U, Predicate> pred(CriteriaBuilder cb) {
-        return cb::equal;
+        return cb::greaterThanOrEqualTo;
     }
 
-    EqFilter() {}
+    GreaterOrEqual(){}
     
-    EqFilter(String property, T value) {
+    GreaterOrEqual(String property, T value) {
         super(property, value);
     }
 
-    EqFilter(String property, T value, boolean negated) {
-        super(property, value,  negated);
+    GreaterOrEqual(String property, T value, boolean negated) {
+        super(property, value, negated);
     }
+
 }

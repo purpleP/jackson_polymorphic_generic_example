@@ -5,7 +5,7 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import java.util.function.BiFunction;
 
-class LikeFilter extends DataFilter<String, String, String> {
+class LikeFilter extends Conditional<String, String, String> {
     @Override BiFunction<Path<String>, String, Predicate> pred(CriteriaBuilder cb) {
         return cb::like;
     }

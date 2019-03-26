@@ -15,13 +15,13 @@ import java.util.List;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-class DataFilterTest {
+class ConditionalTest {
 
     @Autowired EntityManager entityManager;
 
     @Test
     void testEqFilterDate() {
-        var f = new GeFilter<>("date", "2010-01-01");
+        var f = new GreaterOrEqual<>("date", "2010-01-01");
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<A> q = cb.createQuery(A.class);
         Root<A> root = q.from(A.class);
@@ -33,7 +33,7 @@ class DataFilterTest {
 
     @Test
     void testIsNull() {
-        var f = new IsNullFilter<>("id");
+        var f = new IsNull("id");
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<A> q = cb.createQuery(A.class);
         Root<A> root = q.from(A.class);
@@ -45,7 +45,7 @@ class DataFilterTest {
 
     @Test
     void testInFilter() {
-        var f = new InFilter<>("id", List.of());
+        var f = new In<>("id", List.of());
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<A> q = cb.createQuery(A.class);
         Root<A> root = q.from(A.class);
@@ -57,7 +57,7 @@ class DataFilterTest {
 
     @Test
     void testEqFilter() {
-        var f = new EqFilter<>("id", 1);
+        var f = new Equal<>("id", 1);
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<A> q = cb.createQuery(A.class);
         Root<A> root = q.from(A.class);

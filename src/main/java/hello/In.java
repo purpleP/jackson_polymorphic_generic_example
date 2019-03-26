@@ -7,18 +7,18 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
-class InFilter<T, U> extends DataFilter<List<T>, U, List<U>> {
+class In<T, U> extends Conditional<List<T>, U, List<U>> {
     @Override BiFunction<Path<U>, List<U>, Predicate> pred(CriteriaBuilder cb) {
         return (p, l) -> l.isEmpty() ? cb.or() : p.in(l);
     }
 
-    InFilter(){}
+    In(){}
     
-    InFilter(String property, List<T> value) {
+    In(String property, List<T> value) {
         super(property, value);
     }
 
-    InFilter(String property, List<T> value, boolean negated) {
+    In(String property, List<T> value, boolean negated) {
         super(property, value, negated);
     }
 

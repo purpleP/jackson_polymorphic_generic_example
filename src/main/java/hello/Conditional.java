@@ -1,8 +1,6 @@
 package hello;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Path;
@@ -15,23 +13,9 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import static com.fasterxml.jackson.annotation.JsonTypeInfo.As.PROPERTY;
-import static com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME;
 import static java.util.Map.entry;
 
-@JsonTypeInfo(use = NAME, include = PROPERTY, property = "TYPE")
-@JsonSubTypes({
-    @JsonSubTypes.Type(value=IsNullFilter.class, name = "IS_NULL"),
-    @JsonSubTypes.Type(value=EqFilter.class, name = "EQ"),
-    @JsonSubTypes.Type(value=GeFilter.class, name = "GE"),
-    @JsonSubTypes.Type(value=GtFilter.class, name = "GT"),
-    @JsonSubTypes.Type(value=LeFilter.class, name = "LE"),
-    @JsonSubTypes.Type(value=LtFilter.class, name = "LT"),
-    @JsonSubTypes.Type(value=InFilter.class, name = "IN"),
-    @JsonSubTypes.Type(value=LikeFilter.class, name = "LIKE"),
-    @JsonSubTypes.Type(value=ContainsFilter.class, name = "CONTAINS")
-})
-public abstract class DataFilter<T, U, G> {
+public abstract class Conditional<T, U, G> extends AbstractConditional {
 
     abstract BiFunction<Path<U>, G, Predicate> pred(CriteriaBuilder cb);
 
@@ -45,14 +29,9 @@ public abstract class DataFilter<T, U, G> {
     );
 
     @JsonProperty
-    boolean negated;
-    @JsonProperty
-    String property;
-    @JsonProperty
     T value;
 
-
-    DataFilter() {}
+    Conditional() {}
 
     private static <X, Y>
         Map.Entry<Map.Entry<Class<?>, Class<?>>, Function<Object, Object>>
@@ -60,13 +39,12 @@ public abstract class DataFilter<T, U, G> {
             return entry(entry(from, to), x -> f.apply(from.cast(x)));
     }
 
-    public DataFilter(String property, T value) {
+    public Conditional(String property, T value) {
         this(property, value, false);
     }
 
-    public DataFilter(String property, T value, boolean negated) {
-        this.negated = negated;
-        this.property = property;
+    public Conditional(String property, T value, boolean negated) {
+        super(property, negated);
         this.value = value;
     }
 
@@ -78,7 +56,7 @@ public abstract class DataFilter<T, U, G> {
     }
 
     <X, Y> Object trans(X value, Class<? extends Y> cls) {
-        return Optional.ofNullable(DataFilter.converters.get(Map.entry(value.getClass(), cls)))
+        return Optional.ofNullable(Conditional.converters.get(Map.entry(value.getClass(), cls)))
                 .map(f -> f.apply(value)).orElse(value);
     }
 

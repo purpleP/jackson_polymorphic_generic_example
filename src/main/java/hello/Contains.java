@@ -5,18 +5,18 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import java.util.function.BiFunction;
 
-class ContainsFilter extends DataFilter<String, String, String> {
+class Contains extends Conditional<String, String, String> {
     @Override BiFunction<Path<String>, String, Predicate> pred(CriteriaBuilder cb) {
         return (p, v) -> cb.like(p, "%" + v + "%");
     }
 
-    ContainsFilter(){}
+    Contains(){}
 
-    ContainsFilter(String property, String value) {
+    Contains(String property, String value) {
         super(property, value);
     }
     
-    ContainsFilter(String property, String value, boolean negated) {
+    Contains(String property, String value, boolean negated) {
         super(property, value, negated);
     }
 
