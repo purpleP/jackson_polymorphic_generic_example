@@ -26,7 +26,7 @@ import static com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME;
 })
 public abstract class AbstractConditional {
     @JsonProperty
-    boolean negated;
+    boolean negated = false;
     @JsonProperty
     String property;
 
