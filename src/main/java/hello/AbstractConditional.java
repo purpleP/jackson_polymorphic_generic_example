@@ -21,7 +21,7 @@ import static com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME;
     @JsonSubTypes.Type(value = LowerOrEqual.class, name = "LE"),
     @JsonSubTypes.Type(value = Lower.class, name = "LT"),
     @JsonSubTypes.Type(value = In.class, name = "IN"),
-    @JsonSubTypes.Type(value = LikeFilter.class, name = "LIKE"),
+    @JsonSubTypes.Type(value = Like.class, name = "LIKE"),
     @JsonSubTypes.Type(value = Contains.class, name = "CONTAINS")
 })
 public abstract class AbstractConditional {

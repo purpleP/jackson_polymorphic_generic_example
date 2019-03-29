@@ -5,18 +5,18 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import java.util.function.BiFunction;
 
-class LikeFilter extends Conditional<String, String, String> {
+class Like extends Conditional<String, String, String> {
     @Override BiFunction<Path<String>, String, Predicate> pred(CriteriaBuilder cb) {
         return cb::like;
     }
 
-    LikeFilter(){}
+    Like(){}
     
-    LikeFilter(String property, String value) {
+    Like(String property, String value) {
         super(property, value);
     }
 
-    LikeFilter(String property, String value, boolean negated) {
+    Like(String property, String value, boolean negated) {
         super(property, value, negated);
     }
 
