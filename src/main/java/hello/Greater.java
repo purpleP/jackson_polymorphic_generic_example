@@ -3,11 +3,11 @@ package hello;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
-import java.util.function.BiFunction;
 
-public class Greater<T, U extends Comparable<U>> extends Conditional<T, U, U> {
-    @Override BiFunction<Path<U>, U, Predicate> pred(CriteriaBuilder cb) {
-        return cb::greaterThan;
+public class Greater<T> extends Conditional<T> {
+
+    @Override Predicate pred(CriteriaBuilder cb, Path path, Object v) {
+        return cb.greaterThan((Path<Comparable>) path, (Comparable) v);
     }
 
     Greater(){}

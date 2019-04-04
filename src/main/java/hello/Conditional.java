@@ -9,14 +9,13 @@ import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import static java.util.Map.entry;
 
-public abstract class Conditional<T, U, G> extends AbstractConditional {
+public abstract class Conditional<T> extends AbstractConditional {
 
-    abstract BiFunction<Path<U>, G, Predicate> pred(CriteriaBuilder cb);
+    abstract Predicate pred(CriteriaBuilder cb, Path path, Object v);
 
     private static Map<
         Map.Entry<Class<?>, Class<?>>, Function<Object, Object>
@@ -49,20 +48,14 @@ public abstract class Conditional<T, U, G> extends AbstractConditional {
 
 
     public Predicate makePredicate(Path<?> path, CriteriaBuilder cb) {
-        Path<U> p = (Path<U>) path;
-        return pred(cb).apply(p, transform(p.getJavaType()));
+        return pred(cb, path, trans(value, path.getJavaType()));
     }
 
     <X, Y> Object trans(X value, Class<? extends Y> cls) {
-        return Optional.ofNullable(Conditional.converters.get(Map.entry(value.getClass(), cls)))
-                .map(f -> f.apply(value)).orElse(value);
+        return Optional.ofNullable(
+            Conditional.converters.get(Map.entry(value.getClass(), cls))
+        ).map(f -> f.apply(value)).orElse(value);
     }
-
-    @SuppressWarnings("unchecked")
-    G transform(Class<? extends U> cls) {
-        return (G) trans(value, cls);
-    }
-
 
     @Override
     public String toString() {

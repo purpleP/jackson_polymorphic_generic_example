@@ -1,11 +1,10 @@
 package hello;
 
 import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-class IsNull extends AbstractConditional {
+public abstract class IsNull extends AbstractConditional {
 
     IsNull(){}
 
@@ -19,9 +18,5 @@ class IsNull extends AbstractConditional {
 
     IsNull(String property, boolean negated) {
         super(property, negated);
-    }
-
-    @Override Predicate makePredicate(Path<?> path, CriteriaBuilder cb) {
-        return path.isNull();
     }
 }

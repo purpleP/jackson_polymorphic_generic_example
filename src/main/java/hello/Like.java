@@ -1,14 +1,6 @@
 package hello;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import java.util.function.BiFunction;
-
-class Like extends Conditional<String, String, String> {
-    @Override BiFunction<Path<String>, String, Predicate> pred(CriteriaBuilder cb) {
-        return cb::like;
-    }
+public abstract class Like extends Conditional<String> {
 
     Like(){}
     

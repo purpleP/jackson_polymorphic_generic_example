@@ -1,6 +1,6 @@
 package hello;
 
-abstract class Lower<T, U extends Comparable<U>> extends Conditional<T, U, U> {
+abstract class Lower<T> extends Conditional<T> {
     Lower(){}
     
     Lower(String property, T value) {
